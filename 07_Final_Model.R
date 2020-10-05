@@ -6,11 +6,14 @@
 #' of 7 elements.
 #' 3. Other input parameters: `traningDatasets` and `note` about the model
 #' 
-#' Output: The final model named with suffix, `_PCAmodel.rds`
+#' Output: The final model named with suffix, `_PCAmodel_{geneSets}.rds`
 #' 
 #' Process:
-#' - 
-
+#' 1. Collect the following information from pre-processing:
+#'    - Variance explained by PCs
+#'    - MeSH terms for each study
+#'    - GSEA on each PCclsuter
+#' 2. Combine all the information and built PCAGenomicSignatures object
 
 
 
@@ -20,7 +23,8 @@ library(dplyr)
 
 ## Input parameters for PCAmodel_536
 trainingDatasets <- "refinebioRseq"
-note <- "536 refine.bio studies/ use top 20 PCs/ top 90% varying genes"
+note <- "536 refine.bio studies/ use top 20 PCs/ top 90% varying genes/ GSEA with MSigDB C2.all"
+geneSets <- "C2"
 
 ## Working directory
 wd <- file.path("~/data2/PCAGenomicSignatureLibrary", 
@@ -71,6 +75,18 @@ for (study in unique_id) {
 trainingData_MeSH <- all_MeSH[allStudies]
 
 
+##### GSEA #####################################################################
+dir2 <- system.file("script", package = "PCAGenomicSignatures")
+gsea_script <- file.path(dir2, "build_gsea_DB.R")
+source(gsea_script)  # This is the processing script. Doule-check the details.
+
+searchPathways_func <- file.path(dir2, "searchPathways.R")
+source(searchPathways_func)  # load the function
+
+out.dir <- "~/data2/PCAGenomicSignatureLibrary/refinebioRseq/PCAmodel_536"  # GSEA C2 DB is saved here
+gsea_all <- searchPathways(PCAmodel, file.path(out.dir, paste0("gsea_", geneSets)))  
+
+
 ##### Build PCAGenomicSignatures object ########################################
 PCAmodel <- PCAGenomicSignatures(assays = list(model = as.matrix(trainingData_PCclusters$avgLoading)))
 metadata(PCAmodel) <- trainingData_PCclusters[c("cluster", "size", "k", "n")]
@@ -79,14 +95,10 @@ silhouetteWidth(PCAmodel) <- trainingData_PCclusters$sw
 metadata(PCAmodel)$MeSH_freq <- MeSH_freq
 trainingData(PCAmodel)$PCAsummary <- pca_summary
 mesh(PCAmodel) <- trainingData_MeSH
+gsea(PCAmodel) <- gsea_all
 updateNote(PCAmodel) <- note
 
-# # GSEA
-# source('~/data2/PCAGenomicSignatures/inst/script/build_gsea_DB.R')
-# source('~/data2/PCAGenomicSignatures/inst/script/searchPathways.R')
-# gsea_all <- searchPathways(PCAmodel, "~/data2/PCAGenomicSignatureLibrary/refinebioRseq/PCAmodel_536/gsea")
-# gsea(PCAmodel) <- gsea_all
 
-
-fname <- paste0(trainingDatasets, "_PCAmodel.rds")
+## Save
+fname <- paste0(trainingDatasets, "_PCAmodel_", geneSets, ".rds")
 saveRDS(PCAmodel, file.path(wd, fname))

@@ -1,5 +1,5 @@
 
-### Summary table of the number of genes used for different models
+### Summary table of studies/genes for different models
 
 | # of studies | % top varying | # of genes |
 |----------|:-------------:|------:|
