@@ -75,16 +75,6 @@ for (study in unique_id) {
 trainingData_MeSH <- all_MeSH[allStudies]
 
 
-##### GSEA #####################################################################
-dir2 <- system.file("script", package = "PCAGenomicSignatures")
-gsea_script <- file.path(dir2, "build_gsea_DB.R")
-source(gsea_script)  # This is the processing script. Doule-check the details.
-
-searchPathways_func <- file.path(dir2, "searchPathways.R")
-source(searchPathways_func)  # load the function
-
-out.dir <- "~/data2/PCAGenomicSignatureLibrary/refinebioRseq/PCAmodel_536"  # GSEA C2 DB is saved here
-gsea_all <- searchPathways(PCAmodel, file.path(out.dir, paste0("gsea_", geneSets)))  
 
 
 ##### Build PCAGenomicSignatures object ########################################
@@ -95,8 +85,23 @@ silhouetteWidth(PCAmodel) <- trainingData_PCclusters$sw
 metadata(PCAmodel)$MeSH_freq <- MeSH_freq
 trainingData(PCAmodel)$PCAsummary <- pca_summary
 mesh(PCAmodel) <- trainingData_MeSH
-gsea(PCAmodel) <- gsea_all
 updateNote(PCAmodel) <- note
+
+
+
+
+##### GSEA #####################################################################
+dir2 <- system.file("script", package = "PCAGenomicSignatures")
+gsea_script <- file.path(dir2, "build_gsea_DB.R")
+source(gsea_script)  # This is the processing script. Doule-check the details.
+
+searchPathways_func <- file.path(dir2, "searchPathways.R")
+source(searchPathways_func)  # load the function
+
+out.dir <- "~/data2/PCAGenomicSignatureLibrary/refinebioRseq/PCAmodel_536"  # GSEA C2 DB is saved here
+gsea_all <- searchPathways(PCAmodel, file.path(out.dir, paste0("gsea_", geneSets)))  
+gsea(PCAmodel) <- gsea_all
+
 
 
 ## Save

@@ -7,11 +7,13 @@
 #' samples in each study. Files named with suffix `_count.csv`.
 #' 
 #' Output: 
-#' A list with the length of studies in training data, names with suffix
+#' 1. `.rds` : a matrix contaiing all samples (with a subset of genes)
+#' 2. `_SdMean.rds` : standard deviation and mean (with a subset of genes)
+#' 3. A list with the length of studies in training data, names with suffix
 #' `_PCs_rowNorm.rds`. Each element is a list of length 2 containing PCA results,
-#' `rotation` and `variance`.
-#' 1. rotation: a matrix with genes x top PCs 
-#' 2. variance: a matrix with three rows (SD, Variance, Cumultive) x top PCs
+#' *rotation* and *variance*.
+#' - rotation: a matrix with genes x top PCs 
+#' - variance: a matrix with three rows (SD, Variance, Cumultive) x top PCs
 #'  
 #' Process:
 #' 1. Subset each count matrix to the top varying, common genes
