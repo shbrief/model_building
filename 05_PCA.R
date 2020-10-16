@@ -1,10 +1,12 @@
 #' Title: Perform PCA and collect top 20 PCs
 #' 
 #' Input: 
-#' 1. An output from `04_Subset_Genes.R`, which is a list of common, top varying
+#' 1. `cg` : An output from `04_Subset_Genes.R`, which is a list of common, top varying
 #' genes from all the training datasets. File named with prefix `topGenes_`
-#' 2. Outputs from `02_Filtering.R`, which are the log-transformed count matrix of
+#' 2. `in.dir`: Outputs from `02_Filtering.R`, which are the log-transformed count matrix of
 #' samples in each study. Files named with suffix `_count.csv`.
+#' 3. Others: `n` (the number of top PCs to collect) and `trainingDataSets` (the 
+#' name of the training datsets)
 #' 
 #' Output: 
 #' 1. `.rds` : a matrix contaiing all samples (with a subset of genes)

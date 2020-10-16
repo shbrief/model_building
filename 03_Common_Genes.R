@@ -1,5 +1,8 @@
 #' Title: Collect all the genes from each study/experiment
 #' Input: Count matrices from training datasets 
+#' - input directory (`in.dir`): tximport-ed files are saved here. Same as the `out.dir`
+#' from `01_Import.R` script.
+#' 
 #' Output: A list contining a list of genes from each study. The output file (named 
 #' with the prefix `topGenesInTrainingData_`) is saved in the `data` folder within 
 #' the directory this script is. Genes are listed in a decreasing order based on 

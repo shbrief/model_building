@@ -2,6 +2,9 @@
 #' Input: List of ordered gene lists (based on standard deviation) from each study.
 #' Files start with `topGenesInTrainingData_` prefix, followed by the number of 
 #' studies and the date it's created.
+#' - topGenesInTrainingData
+#' - cutoff
+#' 
 #' Output: A list of the common genes met the filtering criteria. The output file 
 #' (named with the prefix `topGenes_`) is saved in the `data` folder within the 
 #' directory this script is.

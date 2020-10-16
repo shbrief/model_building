@@ -1,5 +1,8 @@
 #' Title: Pre-process RNA-seq data from refine.bio 
 #' Input: `tximpot` outputs (`.rds` format) of studies with > 20 downloaded samples  
+#' - input directory (`in.dir`): tximport-ed files are saved here. Same as the `out.dir`
+#' from `01_Import.R` script.
+#' 
 #' Output: One gene expression matrix for each study (= experiment) with the 
 #' extension, `_count.csv`. Only log2(x+1) transformation is done. This file is
 #' saved in the same directory as the input `.rds` file.

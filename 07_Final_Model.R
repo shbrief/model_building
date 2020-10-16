@@ -80,6 +80,7 @@ trainingData_MeSH <- all_MeSH[allStudies]
 ##### Build PCAGenomicSignatures object ########################################
 PCAmodel <- PCAGenomicSignatures(assays = list(model = as.matrix(trainingData_PCclusters$avgLoading)))
 metadata(PCAmodel) <- trainingData_PCclusters[c("cluster", "size", "k", "n")]
+names(metadata(PCAmodel)$size) <- paste0("PCcluster", seq_len(ncol(PCAmodel)))
 studies(PCAmodel) <- trainingData_PCclusters$studies
 silhouetteWidth(PCAmodel) <- trainingData_PCclusters$sw
 metadata(PCAmodel)$MeSH_freq <- MeSH_freq

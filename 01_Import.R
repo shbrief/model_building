@@ -1,7 +1,12 @@
 #' Title: Import RNA-seq data downloaded from refine.bio 
 #' Input: Salmon outputs (`quant.sf` format) of studies with > 20 downloaded samples 
+#' - input directory (`in.dir`): refine.bio datasets were downloaded in here
+#' - output directory (`out.dir`) : tximport-ed files are saved here
+#' 
 #' Output: tximport output with `.rds` extension
 #' Process: Import `_quant.sf` files using `tximport`
+#' Note: Import studies with >20 samples, but for differnet models, different study size' 
+#' cutoffs were applied later. For example, PCAmodel_536 contains studies with >50 samples. 
 
 
 
@@ -40,15 +45,16 @@ for (studyName in studyNames) {
   if (!dir.exists(out.path)) {dir.create(out.path)}
   
   tryCatch({
-    rseq_counts <- tximport(files = files, type = "salmon", tx2gene = tx2gene,
-                            countsFromAbundance = "lengthScaledTPM")
-    fname <- paste0(studyName, ".rds")
-    saveRDS(rseq_counts, file = file.path(out.path, fname))
+      ## tximport
+        rseq_counts <- tximport(files = files, type = "salmon", tx2gene = tx2gene,
+                                countsFromAbundance = "lengthScaledTPM")
+        fname <- paste0(studyName, ".rds")
+        saveRDS(rseq_counts, file = file.path(out.path, fname))
   }, error = function(e) {
-    # collect studies with error: samples in the same study seem to have different genes
-    study_with_error <- paste("ERROR with study", studyName, ":", conditionMessage(e))
-    write.table(study_with_error, 
-                file = "/nobackup/16tb_b/GenomicSignatures/refinebio/studies_with_error.csv",
-                append = TRUE, row.names = FALSE, col.names = FALSE, sep = ",")
+      # collect studies with error: samples in the same study seem to have different genes
+        study_with_error <- paste("ERROR with study", studyName, ":", conditionMessage(e))
+        write.table(study_with_error, 
+                    file = "/nobackup/16tb_b/GenomicSignatures/refinebio/studies_with_error.csv",
+                    append = TRUE, row.names = FALSE, col.names = FALSE, sep = ",")
   })
 }
