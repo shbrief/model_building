@@ -56,8 +56,7 @@ saveRDS(res.hcut, file.path(wd, "res_hcut.rds"))
 
 
 ##### Build avgLoading #########################################################
-trainingData_PCclusters <- buildAvgLoading(t(all), clustering = FALSE, 
-                                           cluster = res.hcut$cluster, iter.max = 100)
+trainingData_PCclusters <- buildAvgLoading(t(all), cluster = res.hcut$cluster)
 
 ## Silhouette Width
 cl <- trainingData_PCclusters$cluster

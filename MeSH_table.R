@@ -12,11 +12,12 @@
 ## Load the training dataset information
 dir <- system.file("extdata", package = "PCAGenomicSignatures")
 studyMeta <- read.table(file.path(dir, "studyMeta.tsv"))
-ind <- which(studyMeta$PCAmodel_536 == TRUE)
+ind <- which(studyMeta$imported == TRUE)
 allStudies <- studyMeta$studyName[ind]
 
 ##### MeSH #####################################################################
 json_path <- "~/data2/Genomic_Super_Signature/data/sra_to_mesh-000000000000.json"
 x <- jsonlite::stream_in(file(json_path))
 x <- x[x$identifier %in% allStudies,]
-saveRDS(x, "~/data2/PCAGenomicSignatures/inst/extdata/MeSH_terms_1399refinebio.rds")
+mesh_table <- x
+save(mesh_table, file = "~/data2/PCAGenomicSignatures/inst/extdata/MeSH_terms_1399refinebio.rda")

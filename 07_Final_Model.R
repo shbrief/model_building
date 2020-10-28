@@ -6,7 +6,7 @@
 #' of 7 elements.
 #' 3. Other input parameters: `traningDatasets` and `note` about the model
 #' 
-#' Output: The final model named with suffix, `_PCAmodel_{geneSets}.rds`
+#' Output: The final model named with suffix, `_PCAmodel_{annotGeneSets}.rds`
 #' 
 #' Process:
 #' 1. Collect the following information from pre-processing:
@@ -24,7 +24,7 @@ library(dplyr)
 ## Input parameters for PCAmodel_536
 trainingDatasets <- "refinebioRseq"
 note <- "536 refine.bio studies/ use top 20 PCs/ top 90% varying genes/ GSEA with MSigDB C2.all"
-geneSets <- "C2"
+annotGeneSets <- "C2"
 
 ## Working directory
 wd <- file.path("~/data2/PCAGenomicSignatureLibrary", 
@@ -50,7 +50,8 @@ for (i in seq_along(trainingData_PCA)) {
 
 ##### MeSH terms ###############################################################
 dir <- system.file("extdata", package = "PCAGenomicSignatures")
-x <- readRDS(file.path(dir, "MeSH_terms_1399refinebio.rds"))
+load(file.path(dir, "MeSH_terms_1399refinebio.rda"))
+x <- mesh_table
 
 # Update bagOfWords and MeSH_freq
 MeSH_freq <- table(x$name) %>% sort(., decreasing = TRUE)  # freq. of each term
@@ -92,7 +93,7 @@ updateNote(PCAmodel) <- note
 
 
 ##### GSEA #####################################################################
-dir2 <- system.file("script", package = "PCAGenomicSignatures")
+dir2 <- system.file("scripts", package = "PCAGenomicSignatures")
 gsea_script <- file.path(dir2, "build_gsea_DB.R")
 source(gsea_script)  # This is the processing script. Doule-check the details.
 
@@ -100,11 +101,11 @@ searchPathways_func <- file.path(dir2, "searchPathways.R")
 source(searchPathways_func)  # load the function
 
 out.dir <- "~/data2/PCAGenomicSignatureLibrary/refinebioRseq/PCAmodel_536"  # GSEA C2 DB is saved here
-gsea_all <- searchPathways(PCAmodel, file.path(out.dir, paste0("gsea_", geneSets)))  
+gsea_all <- searchPathways(PCAmodel, file.path(out.dir, paste0("gsea_", annotGeneSets)))  
 gsea(PCAmodel) <- gsea_all
 
 
 
 ## Save
-fname <- paste0(trainingDatasets, "_PCAmodel_", geneSets, ".rds")
+fname <- paste0(trainingDatasets, "_PCAmodel_", annotGeneSets, ".rds")
 saveRDS(PCAmodel, file.path(wd, fname))
