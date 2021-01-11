@@ -100,7 +100,7 @@ for (study in allStudies) {
   # x <- preprocessCore::normalize.quantiles(x)   # quantile normalization
   
   # PCA
-  pca_res <- prcomp(t(x))
+  pca_res <- prcomp(t(x))   # x is a matrix with genes(row) x samples(column)
   trainingData_PCA[[study]]$rotation <- pca_res$rotation[,1:n]
   colnames(trainingData_PCA[[study]]$rotation) <- paste0(study, ".PC", c(1:n))
   eigs <- pca_res$sdev^2

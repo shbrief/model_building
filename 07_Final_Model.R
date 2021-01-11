@@ -18,8 +18,9 @@
 
 
 
-library(PCAGenomicSignatures)
+library(GenomicSuperSignature)
 library(dplyr)
+d <- 4
 
 ## Input parameters for PCAmodel_536
 trainingDatasets <- "refinebioRseq"
@@ -27,11 +28,16 @@ note <- "536 refine.bio studies/ use top 20 PCs/ top 90% varying genes/ GSEA wit
 annotGeneSets <- "C2"
 
 ## Working directory
-wd <- file.path("~/data2/PCAGenomicSignatureLibrary", 
+wd <- file.path("~/data2/GenomicSuperSignatureLibrary", 
                 trainingDatasets, "PCAmodel_536")
+## Output directory for different cluster number
+if (d != 2.25) {
+    out_dir <- paste0(wd, "_clNum", d)
+    if (!dir.exists(out_dir)) {dir.create(out_dir)}
+} else {out_dir <- wd}
 
 ## Load the training dataset information
-dir <- system.file("extdata", package = "PCAGenomicSignatures")
+dir <- system.file("extdata", package = "GenomicSuperSignature")
 studyMeta <- read.table(file.path(dir, "studyMeta.tsv"))
 ind <- which(studyMeta$PCAmodel_536 == TRUE)
 allStudies <- studyMeta$studyName[ind]
@@ -39,9 +45,9 @@ allStudies <- studyMeta$studyName[ind]
 ## Load PCA and Clustering results
 trainingData_PCA <- readRDS(file.path(wd, paste0(trainingDatasets, "_PCs_rowNorm.rds")))  # PCA result
 fname <- paste0(trainingDatasets, "_PCclusters.rds")
-trainingData_PCclusters <- readRDS(file.path(wd, fname))  # Clustering result
+trainingData_PCclusters <- readRDS(file.path(out_dir, fname))  # Clustering result
 
-## Variance Explained from PCA result
+##### Variance Explained from PCA result #######################################
 pca_summary <- list()
 for (i in seq_along(trainingData_PCA)) {
     pca_summary[[i]] <- trainingData_PCA[[i]]$variance
@@ -49,7 +55,7 @@ for (i in seq_along(trainingData_PCA)) {
 }
 
 ##### MeSH terms ###############################################################
-dir <- system.file("extdata", package = "PCAGenomicSignatures")
+dir <- system.file("extdata", package = "GenomicSuperSignature")
 load(file.path(dir, "MeSH_terms_1399refinebio.rda"))
 x <- mesh_table
 
@@ -57,19 +63,17 @@ x <- mesh_table
 MeSH_freq <- table(x$name) %>% sort(., decreasing = TRUE)  # freq. of each term
 for (i in 1:nrow(x)) {x$bagOfWords[i] <- MeSH_freq[x$name[i]]}  # add freq. to the main table
 
-# Order based on the score
-x$score <- as.numeric(x$score)
-x <- x[order(x$score, decreasing = TRUE),]
-
 # 1398 studies in the given table
 unique_id <- unique(x$identifier)
 
 # Split MeSH term table to a list of each study, `all_MeSH`
+# RAVmodel is currently doesn't have 'concept'.
 all_MeSH <- vector("list", length(unique_id))
 names(all_MeSH) <- unique_id
 for (study in unique_id) {
     ind <- grepl(study, x$identifier)
-    all_MeSH[[study]] <- x[ind, c("score", "identifier", "name", "explanation", "bagOfWords")]
+    all_MeSH[[study]] <- x[ind, c("score", "identifier", "concept", "name", 
+                                  "explanation", "bagOfWords")]
 }
 
 # Subset only to the studies used in the model 
@@ -89,23 +93,24 @@ trainingData(PCAmodel)$PCAsummary <- pca_summary
 mesh(PCAmodel) <- trainingData_MeSH
 updateNote(PCAmodel) <- note
 
-
+## Save pre-GSEA version
+fname <- paste0(trainingDatasets, "_PCAmodel.rds")
+saveRDS(PCAmodel, file.path(out_dir, fname))
 
 
 ##### GSEA #####################################################################
-dir2 <- system.file("scripts", package = "PCAGenomicSignatures")
+dir2 <- system.file("scripts", package = "GenomicSuperSignature")
 gsea_script <- file.path(dir2, "build_gsea_DB.R")
 source(gsea_script)  # This is the processing script. Doule-check the details.
 
 searchPathways_func <- file.path(dir2, "searchPathways.R")
 source(searchPathways_func)  # load the function
 
-out.dir <- "~/data2/PCAGenomicSignatureLibrary/refinebioRseq/PCAmodel_536"  # GSEA C2 DB is saved here
-gsea_all <- searchPathways(PCAmodel, file.path(out.dir, paste0("gsea_", annotGeneSets)))  
+gsea_dir <- file.path(out_dir, paste0("gsea_", annotGeneSets))  # GSEA C2 DB is saved here
+gsea_all <- searchPathways(PCAmodel, gsea_dir)  
 gsea(PCAmodel) <- gsea_all
 
-
-
-## Save
+## Save post-GSEA version
 fname <- paste0(trainingDatasets, "_PCAmodel_", annotGeneSets, ".rds")
-saveRDS(PCAmodel, file.path(wd, fname))
+saveRDS(PCAmodel, file.path(out_dir, fname))
+
