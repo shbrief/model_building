@@ -1,18 +1,18 @@
-#' Title: Build the final version of PCAmodel from pre-processed data
+#' Title: Build the final version of RAVmodel from pre-processed data
 #' Input: 
 #' 1. `_PCs_rowNorm.rds`: An output from `05_PCA.R`, which is a list with the length 
 #' of training data. Each element contains `rotation` and `variance`.
 #' 2. `_PCclusters_hclust.rds`: An output from `06_Clustering.R`, which is a list 
 #' of 7 elements.
-#' 3. Other input parameters: `traningDatasets` and `note` about the model
+#' 3. Other input parameters: `trainingDatasets` and `note` about the model
 #' 
-#' Output: The final model named with suffix, `_PCAmodel_{annotGeneSets}.rds`
+#' Output: The final model named with suffix, `_RAVmodel_{annotGeneSets}.rds`
 #' 
 #' Process:
 #' 1. Collect the following information from pre-processing:
 #'    - Variance explained by PCs
 #'    - MeSH terms for each study
-#'    - GSEA on each PCclsuter
+#'    - GSEA on each PCcluster
 #' 2. Combine all the information and built PCAGenomicSignatures object
 
 
@@ -22,14 +22,14 @@ library(GenomicSuperSignature)
 library(dplyr)
 d <- 4
 
-## Input parameters for PCAmodel_536
+## Input parameters for RAVmodel_536
 trainingDatasets <- "refinebioRseq"
 note <- "536 refine.bio studies/ use top 20 PCs/ top 90% varying genes/ GSEA with MSigDB C2.all"
 annotGeneSets <- "C2"
 
 ## Working directory
 wd <- file.path("~/data2/GenomicSuperSignatureLibrary", 
-                trainingDatasets, "PCAmodel_536")
+                trainingDatasets, "RAVmodel_536")
 ## Output directory for different cluster number
 if (d != 2.25) {
     out_dir <- paste0(wd, "_clNum", d)
@@ -38,8 +38,8 @@ if (d != 2.25) {
 
 ## Load the training dataset information
 dir <- system.file("extdata", package = "GenomicSuperSignature")
-studyMeta <- read.table(file.path(dir, "studyMeta.tsv"))
-ind <- which(studyMeta$PCAmodel_536 == TRUE)
+studyMeta <- read.table(file.path(dir, "studyMeta.tsv.gz"))
+ind <- which(studyMeta$RAVmodel_536 == TRUE)
 allStudies <- studyMeta$studyName[ind]
 
 ## Load PCA and Clustering results
@@ -83,19 +83,19 @@ trainingData_MeSH <- all_MeSH[allStudies]
 
 
 ##### Build PCAGenomicSignatures object ########################################
-PCAmodel <- PCAGenomicSignatures(assays = list(model = as.matrix(trainingData_PCclusters$avgLoading)))
-metadata(PCAmodel) <- trainingData_PCclusters[c("cluster", "size", "k", "n")]
-names(metadata(PCAmodel)$size) <- paste0("PCcluster", seq_len(ncol(PCAmodel)))
-studies(PCAmodel) <- trainingData_PCclusters$studies
-silhouetteWidth(PCAmodel) <- trainingData_PCclusters$sw
-metadata(PCAmodel)$MeSH_freq <- MeSH_freq
-trainingData(PCAmodel)$PCAsummary <- pca_summary
-mesh(PCAmodel) <- trainingData_MeSH
-updateNote(PCAmodel) <- note
+RAVmodel <- PCAGenomicSignatures(assays = list(model = as.matrix(trainingData_PCclusters$avgLoading)))
+metadata(RAVmodel) <- trainingData_PCclusters[c("cluster", "size", "k", "n")]
+names(metadata(RAVmodel)$size) <- paste0("PCcluster", seq_len(ncol(RAVmodel)))
+studies(RAVmodel) <- trainingData_PCclusters$studies
+silhouetteWidth(RAVmodel) <- trainingData_PCclusters$sw
+metadata(RAVmodel)$MeSH_freq <- MeSH_freq
+trainingData(RAVmodel)$PCAsummary <- pca_summary
+mesh(RAVmodel) <- trainingData_MeSH
+updateNote(RAVmodel) <- note
 
 ## Save pre-GSEA version
-fname <- paste0(trainingDatasets, "_PCAmodel.rds")
-saveRDS(PCAmodel, file.path(out_dir, fname))
+fname <- paste0(trainingDatasets, "_RAVmodel.rds")
+saveRDS(RAVmodel, file.path(out_dir, fname))
 
 
 ##### GSEA #####################################################################
@@ -107,10 +107,10 @@ searchPathways_func <- file.path(dir2, "searchPathways.R")
 source(searchPathways_func)  # load the function
 
 gsea_dir <- file.path(out_dir, paste0("gsea_", annotGeneSets))  # GSEA C2 DB is saved here
-gsea_all <- searchPathways(PCAmodel, gsea_dir)  
-gsea(PCAmodel) <- gsea_all
+gsea_all <- searchPathways(RAVmodel, gsea_dir)  
+gsea(RAVmodel) <- gsea_all
 
 ## Save post-GSEA version
-fname <- paste0(trainingDatasets, "_PCAmodel_", annotGeneSets, ".rds")
-saveRDS(PCAmodel, file.path(out_dir, fname))
+fname <- paste0(trainingDatasets, "_RAVmodel_", annotGeneSets, ".rds")
+saveRDS(RAVmodel, file.path(out_dir, fname))
 
