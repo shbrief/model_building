@@ -8,21 +8,21 @@
 #' 1. Combine all the PCs
 #' 2. Calculate distance matrix based on Spearman correlation
 #' 3. Hierarchical clustering and cut the tree at `k = round(#ofPCs/d, 0)`
-#' 4. Create avgLoading using `PCAGenomicSignatures::buildAvgLoading`
+#' 4. Create avgLoading using `GenomicSuperSignature::buildAvgLoading`
 #' 5. Calculate Silhouette width of each cluster
 
 
 
 
 
-library(PCAGenomicSignatures)
+library(GenomicSuperSignature)
 library(factoextra)
 trainingDatasets <- "refinebioRseq"
 d <- 4  # for cluster number (line 56)
 
 ## Working directory
-wd <- file.path("~/data2/PCAGenomicSignatureLibrary", 
-                trainingDatasets, "PCAmodel_536")
+wd <- file.path("~/data2/GenomicSuperSignatureLibrary", 
+                trainingDatasets, "RAVmodel_536")
 ## Output directory for different cluster number
 if (d != 2.25) {
     out_dir <- paste0(wd, "_clNum", d)

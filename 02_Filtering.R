@@ -11,6 +11,14 @@
 #' 1. Use 1,399 studies with > 20 samples succesfully downloaded and imported
 #' 2. log2 transformation of the count matrix
 #' 3. No filtering on any genes/samples
+#' 
+#' Note:
+#' Some models has additional filtering criteria. For example, RAVmodel_536 further
+#' excludes studies potentially from 'Single-Cell Analysis'. The final list of 
+#' training datasets for each model is availble in the package through `extdata/studyMeta.tsv`.
+#' Specifically, excluding 'Single-Cell Analysis' studies process is described 
+#' here: https://shbrief.github.io/GenomicSuperSignaturePaper/Methods/training_datasets/available_samples.html#pcamodel_536.
+
 
 
 
@@ -21,7 +29,7 @@ library(dplyr)
 in.dir <- "/nobackup/16tb_b/GenomicSignatures/refinebio/rna_seq_v2"  
 
 ## Load the training dataset information
-dir <- system.file("extdata", package = "PCAGenomicSignatures")
+dir <- system.file("extdata", package = "GenomicSuperSignature")
 studyMeta <- read.table(file.path(dir, "studyMeta.tsv"))
 
 ## 1,399 studies that are successfully imported and have > 20 samples

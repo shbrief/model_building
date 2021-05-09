@@ -1,12 +1,14 @@
 #' Title: Import RNA-seq data downloaded from refine.bio 
+#' 
 #' Input: Salmon outputs (`quant.sf` format) of studies with > 20 downloaded samples 
 #' - input directory (`in.dir`): refine.bio datasets were downloaded in here
 #' - output directory (`out.dir`) : tximport-ed files are saved here
-#' 
 #' Output: tximport output with `.rds` extension
 #' Process: Import `_quant.sf` files using `tximport`
-#' Note: Import studies with >20 samples, but for differnet models, different study size' 
-#' cutoffs were applied later. For example, PCAmodel_536 contains studies with >50 samples. 
+#' 
+#' Note: Import studies with >20 samples, but for differnet models, different study size 
+#' cutoffs were applied later. For example, RAVmodel_536 contains studies with >50 samples.
+ 
 
 
 

@@ -26,7 +26,7 @@
 
 
 
-## Input parameters for PCAmodel_536
+## Input parameters for RAVmodel_536
 n <- 20   # The number PCs to keep
 cg <- readRDS("data/topGenes_13934.rds")
 trainingDatasets <- "refinebioRseq" 
@@ -34,15 +34,15 @@ trainingDatasets <- "refinebioRseq"
 ## Working directories
 in.dir <- "/nobackup/16tb_b/GenomicSignature/refinebio/rna_seq_v2"
 # for output
-wd_data <- file.path("~/data2/PCAGenomicSignatureLibrary", trainingDatasets)  
+wd_data <- file.path("~/data2/GenomicSuperSignatureLibrary", trainingDatasets)  
 if (!dir.exists(wd_data)) {dir.create(wd_data)}
-wd <- file.path(wd_data, "PCAmodel_536")
+wd <- file.path(wd_data, "RAVmodel_536")
 if (!dir.exists(wd)) {dir.create(wd)}
 
 ## Load the training dataset information
-dir <- system.file("extdata", package = "PCAGenomicSignatures")
+dir <- system.file("extdata", package = "GenomicSuperSignature")
 studyMeta <- read.table(file.path(dir, "studyMeta.tsv"))
-ind <- which(studyMeta$PCAmodel_536 == TRUE)
+ind <- which(studyMeta$RAVmodel_536 == TRUE)
 allStudies <- studyMeta$studyName[ind]
 
 ## An empty list for PCA results (rotation and variance)

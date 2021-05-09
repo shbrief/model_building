@@ -21,7 +21,7 @@
 in.dir <- "/nobackup/16tb_b/GenomicSignatures/refinebio/rna_seq_v2"  
   
 ## Load the training dataset information
-dir <- system.file("extdata", package = "PCAGenomicSignatures")
+dir <- system.file("extdata", package = "GenomicSuperSignature")
 studyMeta <- read.table(file.path(dir, "studyMeta.tsv"))
 ind <- which(studyMeta$PCAmodel_536 == TRUE)
 studies <- studyMeta$studyName[ind]
