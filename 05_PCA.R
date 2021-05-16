@@ -6,16 +6,16 @@
 #' 2. `in.dir`: Outputs from `02_Filtering.R`, which are the log-transformed count matrix of
 #' samples in each study. Files named with suffix `_count.csv`.
 #' 3. Others: `n` (the number of top PCs to collect) and `trainingDataSets` (the 
-#' name of the training datsets)
+#' name of the training datasets)
 #' 
 #' Output: 
-#' 1. `.rds` : a matrix contaiing all samples (with a subset of genes)
+#' 1. `.rds` : a matrix containing all samples (with a subset of genes)
 #' 2. `_SdMean.rds` : standard deviation and mean (with a subset of genes)
 #' 3. A list with the length of studies in training data, names with suffix
 #' `_PCs_rowNorm.rds`. Each element is a list of length 2 containing PCA results,
 #' *rotation* and *variance*.
 #' - rotation: a matrix with genes x top PCs 
-#' - variance: a matrix with three rows (SD, Variance, Cumultive) x top PCs
+#' - variance: a matrix with three rows (SD, Variance, Cumulative) x top PCs
 #'  
 #' Process:
 #' 1. Subset each count matrix to the top varying, common genes
@@ -49,7 +49,7 @@ allStudies <- studyMeta$studyName[ind]
 trainingData_PCA <- vector("list", length(allStudies))
 names(trainingData_PCA) <- allStudies
 
-##### Caluclate sd and mean across all the samples #############################
+##### Calculate sd and mean across all the samples #############################
 allSamples <- data.frame(matrix(NA, nrow = length(cg))) 
 rownames(allSamples) <- cg
 iter <- 0
@@ -70,7 +70,7 @@ SdMean <- list(sd = s, mean = m)
 fname <- paste0(trainingDatasets, "_", iter, "study")
 
 saveRDS(SdMean, file.path(wd, paste0(fname, "_SdMean.rds")))   # sd and mean
-saveRDS(allSamples, file.path(wd, paste0(fname, ".rds")))   # matrix contaiing all samples
+saveRDS(allSamples, file.path(wd, paste0(fname, ".rds")))   # matrix containing all samples
         
 ## Remove non-expressing genes in all samples (m == 0)
 non_exp <- which(s == 0) %>% names

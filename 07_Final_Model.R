@@ -26,6 +26,7 @@ d <- 4
 trainingDatasets <- "refinebioRseq"
 note <- "536 refine.bio studies/ use top 20 PCs/ top 90% varying genes/ GSEA with MSigDB C2.all"
 annotGeneSets <- "C2"
+annot_database <- "MSigDB C2"
 
 ## Working directory
 wd <- file.path("~/data2/GenomicSuperSignatureLibrary", 
@@ -86,6 +87,7 @@ trainingData_MeSH <- all_MeSH[allStudies]
 RAVmodel <- PCAGenomicSignatures(assays = list(model = as.matrix(trainingData_PCclusters$avgLoading)))
 metadata(RAVmodel) <- trainingData_PCclusters[c("cluster", "size", "k", "n")]
 names(metadata(RAVmodel)$size) <- paste0("PCcluster", seq_len(ncol(RAVmodel)))
+geneSets(miniRAVmodel) <- annot_database
 studies(RAVmodel) <- trainingData_PCclusters$studies
 silhouetteWidth(RAVmodel) <- trainingData_PCclusters$sw
 metadata(RAVmodel)$MeSH_freq <- MeSH_freq
