@@ -23,6 +23,7 @@ d <- 4  # for cluster number (line 56)
 ## Working directory
 wd <- file.path("~/data2/GenomicSuperSignatureLibrary", 
                 trainingDatasets, "RAVmodel_536")
+
 ## Output directory for different cluster number
 if (d != 2.25) {
     out_dir <- paste0(wd, "_clNum", d)
@@ -52,8 +53,9 @@ print(t)
 saveRDS(res.dist, file.path(out_dir, "res_dist.rds"))
 
 ## Cut the tree
+k <- round(nrow(all)/d, 0)
 start <- Sys.time()
-res.hcut <- factoextra::hcut(res.dist, k = round(nrow(all)/d, 0), hc_func = "hclust", 
+res.hcut <- factoextra::hcut(res.dist, k = k, hc_func = "hclust", 
                              hc_method = "ward.D", hc_metric = "spearman")
 end <- Sys.time()
 t2 <- end - start
@@ -62,7 +64,7 @@ saveRDS(res.hcut, file.path(out_dir, "res_hcut.rds"))
 
 
 ##### Build avgLoading #########################################################
-trainingData_PCclusters <- buildAvgLoading(allZ, cluster = res.hcut$cluster)
+trainingData_PCclusters <- buildAvgLoading(allZ, k, cluster = res.hcut$cluster)
 
 ## Silhouette Width
 cl <- trainingData_PCclusters$cluster
