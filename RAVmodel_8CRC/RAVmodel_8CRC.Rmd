@@ -15,8 +15,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r}
+```{r message=FALSE}
 library(GenomicSuperSignature)
+library(dplyr)
 ```
 
 # Import
@@ -164,7 +165,7 @@ res.hcut <- factoextra::hcut(res.dist, k = k, hc_func = "hclust",
 end <- Sys.time()
 t2 <- end - start
 print(t2)   
-saveRDS(res.hcut, file.path(out_dir, "res_hcut.rds"))
+saveRDS(res.hcut, "res_hcut.rds")
 
 
 ##### Build avgLoading #########################################################
