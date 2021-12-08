@@ -20,7 +20,7 @@
 
 library(GenomicSuperSignature)
 library(dplyr)
-d <- 4
+d <- 2.25
 
 ## Input parameters for RAVmodel_536
 trainingDatasets <- "refinebioRseq"
@@ -56,7 +56,7 @@ for (i in seq_along(trainingData_PCA)) {
 }
 
 ##### MeSH terms ###############################################################
-dir <- system.file("extdata", package = "GenomicSuperSignature")
+dir <- system.file("extdata", package = "GenomicSuperSignaturePaper")
 load(file.path(dir, "MeSH_terms_1399refinebio.rda"))
 x <- mesh_table
 
@@ -84,19 +84,21 @@ trainingData_MeSH <- all_MeSH[allStudies]
 
 
 ##### Build PCAGenomicSignatures object ########################################
-RAVmodel <- PCAGenomicSignatures(assays = list(model = as.matrix(trainingData_PCclusters$avgLoading)))
+RAVmodel <- PCAGenomicSignatures(assays = list(RAVindex = as.matrix(trainingData_PCclusters$avgLoading)))
 metadata(RAVmodel) <- trainingData_PCclusters[c("cluster", "size", "k", "n")]
-names(metadata(RAVmodel)$size) <- paste0("PCcluster", seq_len(ncol(RAVmodel)))
+names(metadata(RAVmodel)$size) <- paste0("RAV", seq_len(ncol(RAVmodel)))
 geneSets(miniRAVmodel) <- annot_database
 studies(RAVmodel) <- trainingData_PCclusters$studies
 silhouetteWidth(RAVmodel) <- trainingData_PCclusters$sw
 metadata(RAVmodel)$MeSH_freq <- MeSH_freq
-trainingData(RAVmodel)$PCAsummary <- pca_summary
-mesh(RAVmodel) <- trainingData_MeSH
+trainingData(RAVmodel)$PCAsummary <- pca_summary[rownames(trainingData(RAVmodel))]
+mesh(RAVmodel) <- trainingData_MeSH[rownames(trainingData(RAVmodel))]
 updateNote(RAVmodel) <- note
+metadata(RAVmodel)$version <- "1.1.0"
 
 ## Save pre-GSEA version
-fname <- paste0(trainingDatasets, "_RAVmodel.rds")
+fname <- paste0(trainingDatasets, "_RAVmodel_", 
+                format(Sys.Date(), format="%Y%m%d"), ".rds")
 saveRDS(RAVmodel, file.path(out_dir, fname))
 
 
@@ -113,6 +115,7 @@ gsea_all <- searchPathways(RAVmodel, gsea_dir)
 gsea(RAVmodel) <- gsea_all
 
 ## Save post-GSEA version
-fname <- paste0(trainingDatasets, "_RAVmodel_", annotGeneSets, ".rds")
+fname <- paste0(trainingDatasets, "_RAVmodel_", annotGeneSets, 
+                "_", format(Sys.Date(), format="%Y%m%d"),".rds")
 saveRDS(RAVmodel, file.path(out_dir, fname))
 
