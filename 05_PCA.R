@@ -32,7 +32,7 @@ cg <- readRDS("data/topGenes_13934.rds")
 trainingDatasets <- "refinebioRseq" 
 
 ## Working directories
-in.dir <- "/nobackup/16tb_b/GenomicSignature/refinebio/rna_seq_v2"
+in.dir <- "~/data2/refinebio_processed/rna_seq_v2"
 # for output
 wd_data <- file.path("~/data2/GenomicSuperSignatureLibrary", trainingDatasets)  
 if (!dir.exists(wd_data)) {dir.create(wd_data)}

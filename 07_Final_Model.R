@@ -25,8 +25,8 @@ d <- 2.25
 ## Input parameters for RAVmodel_536
 trainingDatasets <- "refinebioRseq"
 note <- "536 refine.bio studies/ use top 20 PCs/ top 90% varying genes/ GSEA with MSigDB C2.all"
-annotGeneSets <- "C2"
-annot_database <- "MSigDB C2"
+annotGeneSets <- "C2"   # will be used for the output name
+annot_database <- "MSigDB C2"   # will be added into the RAVmodel metadata
 
 ## Working directory
 wd <- file.path("~/data2/GenomicSuperSignatureLibrary", 

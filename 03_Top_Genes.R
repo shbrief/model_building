@@ -19,11 +19,12 @@
 
 ## Working directories
 in.dir <- "/nobackup/16tb_b/GenomicSignatures/refinebio/rna_seq_v2"  
+in.dir <- "/mnt/STORE1/16tb_b/GenomicSignatures/refinebio/rna_seq_v2"
   
 ## Load the training dataset information
 dir <- system.file("extdata", package = "GenomicSuperSignature")
-studyMeta <- read.table(file.path(dir, "studyMeta.tsv"))
-ind <- which(studyMeta$PCAmodel_536 == TRUE)
+studyMeta <- read.table(file.path(dir, "studyMeta.tsv.gz"))
+ind <- which(studyMeta$RAVmodel_536 == TRUE)
 studies <- studyMeta$studyName[ind]
 
 ## List containing the ordered list of genes from each study
