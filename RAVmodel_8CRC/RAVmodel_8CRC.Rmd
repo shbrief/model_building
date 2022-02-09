@@ -11,13 +11,23 @@ output:
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  comment = "#>", collapse = TRUE, message = FALSE, warning = FALSE 
+  comment = "#>", collapse = TRUE, message = FALSE, warning = FALSE, eval=FALSE 
 )
 ```
 
-```{r message=FALSE}
+```{r message=FALSE, eval=TRUE}
 library(GenomicSuperSignature)
 library(dplyr)
+library(factoextra)
+```
+
+# Parameters
+Model specific parameters 
+```{r}
+trainingDatasets <- "CRC"
+n <- 20   # PCA: the number of top PCs to collect
+d <- 4    # clustering
+note <- "8 CRC training datasets using 9,242 common genes"
 ```
 
 # Import
@@ -31,6 +41,7 @@ for (study in allStudies) {
     load(file.path(dat_dir, "data/eSets_new", paste0(study, ".RData")))
 }
 ```
+
 
 # Common Genes
 ```{r}
@@ -48,9 +59,6 @@ cg <- Reduce(intersect, allGenes)
 
 # PCA
 ```{r}
-trainingDatasets <- "CRC"
-n <- 20
-
 ## An empty list for PCA results (rotation and variance)
 trainingData_PCA <- vector("list", length(allStudies))
 names(trainingData_PCA) <- allStudies
@@ -129,13 +137,8 @@ fname <- paste0(trainingDatasets, "_PCs_rowNorm.rds")
 saveRDS(trainingData_PCA, fname)
 ```
 
-
 # Clustering
 ```{r}
-library(factoextra)
-trainingDatasets <- "CRC"
-d <- 4 
-
 ## Import input data
 fname <- paste0(trainingDatasets, "_PCs_rowNorm.rds")
 trainingData_PCA <- readRDS(fname)
@@ -167,7 +170,6 @@ t2 <- end - start
 print(t2)   
 saveRDS(res.hcut, "res_hcut.rds")
 
-
 ##### Build avgLoading #########################################################
 trainingData_PCclusters <- buildAvgLoading(allZ, k, cluster = res.hcut$cluster)
 
@@ -183,3 +185,90 @@ saveRDS(trainingData_PCclusters, fname)
 ```
 
 # Final Model
+```{r}
+## Load PCA and Clustering results
+trainingData_PCA <- readRDS(paste0(trainingDatasets, "_PCs_rowNorm.rds"))  # PCA result
+fname <- paste0(trainingDatasets, "_PCclusters.rds")
+trainingData_PCclusters <- readRDS(fname)  # Clustering result
+```
+
+```{r}
+##### Variance Explained from PCA result #######################################
+pca_summary <- list()
+for (i in seq_along(trainingData_PCA)) {
+    pca_summary[[i]] <- trainingData_PCA[[i]]$variance
+    names(pca_summary)[i] <- names(trainingData_PCA)[i]
+}
+
+##### MeSH terms ###############################################################
+# dir <- system.file("extdata", package = "GenomicSuperSignaturePaper")
+# load(file.path(dir, "MeSH_terms_1399refinebio.rda"))
+# x <- mesh_table
+# 
+# # Update bagOfWords and MeSH_freq
+# MeSH_freq <- table(x$name) %>% sort(., decreasing = TRUE)  # freq. of each term
+# for (i in 1:nrow(x)) {x$bagOfWords[i] <- MeSH_freq[x$name[i]]}  # add freq. to the main table
+# 
+# # 1398 studies in the given table
+# unique_id <- unique(x$identifier)
+# 
+# # Split MeSH term table to a list of each study, `all_MeSH`
+# # RAVmodel is currently doesn't have 'concept'.
+# all_MeSH <- vector("list", length(unique_id))
+# names(all_MeSH) <- unique_id
+# for (study in unique_id) {
+#     ind <- grepl(study, x$identifier)
+#     all_MeSH[[study]] <- x[ind, c("score", "identifier", "concept", "name", 
+#                                   "explanation", "bagOfWords")]
+# }
+# 
+# # Subset only to the studies used in the model 
+# trainingData_MeSH <- all_MeSH[allStudies]
+
+
+
+
+##### Build PCAGenomicSignatures object ########################################
+RAVmodel <- PCAGenomicSignatures(assays = list(RAVindex = as.matrix(trainingData_PCclusters$avgLoading)))
+metadata(RAVmodel) <- trainingData_PCclusters[c("cluster", "size", "k", "n")]
+names(metadata(RAVmodel)$size) <- paste0("RAV", seq_len(ncol(RAVmodel)))
+geneSets(RAVmodel) <- annot_database
+studies(RAVmodel) <- trainingData_PCclusters$studies
+silhouetteWidth(RAVmodel) <- trainingData_PCclusters$sw
+# metadata(RAVmodel)$MeSH_freq <- MeSH_freq
+trainingData(RAVmodel)$PCAsummary <- pca_summary[rownames(trainingData(RAVmodel))]
+# mesh(RAVmodel) <- trainingData_MeSH[rownames(trainingData(RAVmodel))]
+updateNote(RAVmodel) <- note
+metadata(RAVmodel)$version <- "1.1.0"
+
+## Save pre-GSEA version
+fname <- paste0(trainingDatasets, "_RAVmodel_", 
+                format(Sys.Date(), format="%Y%m%d"), ".rds")
+saveRDS(RAVmodel, fname)
+
+
+##### GSEA #####################################################################
+dir2 <- system.file("scripts", package = "GenomicSuperSignature")
+gsea_script <- file.path(dir2, "build_gsea_DB.R")
+source(gsea_script)  # This is the processing script. Doule-check the details.
+
+searchPathways_func <- file.path(dir2, "searchPathways.R")
+source(searchPathways_func)  # load the function
+
+gsea_dir <- paste0("gsea_", annotGeneSets)  # GSEA C2 DB is saved here
+gsea_all <- searchPathways(RAVmodel, gsea_dir)  
+gsea(RAVmodel) <- gsea_all
+
+## Save post-GSEA version
+fname <- paste0(trainingDatasets, "_RAVmodel_", annotGeneSets, 
+                "_", format(Sys.Date(), format="%Y%m%d"),".rds")
+saveRDS(RAVmodel, fname)
+```
+
+
+
+# Validation
+```{r}
+
+```
+

@@ -26,7 +26,7 @@
 library(dplyr)
 
 ## Working directories
-in.dir <- "/nobackup/16tb_b/GenomicSignatures/refinebio/rna_seq_v2"  
+in.dir <- "~/data2/refinebio_processed/rna_seq_v2"  
 
 ## Load the training dataset information
 dir <- system.file("extdata", package = "GenomicSuperSignature")

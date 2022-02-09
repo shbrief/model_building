@@ -41,7 +41,7 @@ if (!dir.exists(wd)) {dir.create(wd)}
 
 ## Load the training dataset information
 dir <- system.file("extdata", package = "GenomicSuperSignature")
-studyMeta <- read.table(file.path(dir, "studyMeta.tsv"))
+studyMeta <- read.table(file.path(dir, "studyMeta.tsv.gz"))
 ind <- which(studyMeta$RAVmodel_536 == TRUE)
 allStudies <- studyMeta$studyName[ind]
 

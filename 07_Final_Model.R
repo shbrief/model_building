@@ -2,8 +2,8 @@
 #' Input: 
 #' 1. `_PCs_rowNorm.rds`: An output from `05_PCA.R`, which is a list with the length 
 #' of training data. Each element contains `rotation` and `variance`.
-#' 2. `_PCclusters_hclust.rds`: An output from `06_Clustering.R`, which is a list 
-#' of 7 elements.
+#' 2. `_PCclusters_hclust.rds` (or `_PCclusters.rds`): An output from 
+#' `06_Clustering.R`, which is a list of 7 elements.
 #' 3. Other input parameters: `trainingDatasets` and `note` about the model
 #' 
 #' Output: The final model named with suffix, `_RAVmodel_{annotGeneSets}.rds`
@@ -41,7 +41,7 @@ if (d != 2.25) {
 dir <- system.file("extdata", package = "GenomicSuperSignature")
 studyMeta <- read.table(file.path(dir, "studyMeta.tsv.gz"))
 ind <- which(studyMeta$RAVmodel_536 == TRUE)
-allStudies <- studyMeta$studyName[ind]
+allStudies <- studyMeta$studyName[ind] # character vector with NCBI study accession
 
 ## Load PCA and Clustering results
 trainingData_PCA <- readRDS(file.path(wd, paste0(trainingDatasets, "_PCs_rowNorm.rds")))  # PCA result
@@ -87,7 +87,7 @@ trainingData_MeSH <- all_MeSH[allStudies]
 RAVmodel <- PCAGenomicSignatures(assays = list(RAVindex = as.matrix(trainingData_PCclusters$avgLoading)))
 metadata(RAVmodel) <- trainingData_PCclusters[c("cluster", "size", "k", "n")]
 names(metadata(RAVmodel)$size) <- paste0("RAV", seq_len(ncol(RAVmodel)))
-geneSets(miniRAVmodel) <- annot_database
+geneSets(RAVmodel) <- annot_database
 studies(RAVmodel) <- trainingData_PCclusters$studies
 silhouetteWidth(RAVmodel) <- trainingData_PCclusters$sw
 metadata(RAVmodel)$MeSH_freq <- MeSH_freq
@@ -103,8 +103,7 @@ saveRDS(RAVmodel, file.path(out_dir, fname))
 
 
 ##### GSEA #####################################################################
-dir2 <- system.file("scripts", package = "GenomicSuperSignature")
-gsea_script <- file.path(dir2, "build_gsea_DB.R")
+gsea_script <- "~/data2/model_building/R/build_gsea_DB.R"
 source(gsea_script)  # This is the processing script. Doule-check the details.
 
 searchPathways_func <- file.path(dir2, "searchPathways.R")

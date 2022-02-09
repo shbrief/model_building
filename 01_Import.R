@@ -14,13 +14,13 @@
 
 
 ## Working directories
-in.dir <- "/nobackup/16tb_b/refinebio/rna_seq"
+in.dir <- "~/data2/refinebio_download/rna_seq"
 # out.dir <- "/nobackup/16tb_b/GenomicSignatures/refinebio/rna_seq"   # 889 studies more than 50 metadata samples/study
-out.dir <- "/nobackup/16tb_b/GenomicSignatures/refinebio/rna_seq_v2"   # 1579 studies more than 20 downloaded samples/study 
+out.dir <- "~/data2/refinebio_processed/rna_seq_v2"   # 1579 studies more than 20 downloaded samples/study 
 
 ## Load the training dataset information
 dir <- system.file("extdata", package = "GenomicSuperSignature")
-studyMeta <- read.table(file.path(dir, "studyMeta.tsv"))
+studyMeta <- read.table(file.path(dir, "studyMeta.tsv.gz"))
 ind <- which(studyMeta$downloaded > 20)   # try to import 1579 studies with > 20 downloaded samples
 studyNames <- studyMeta$studyName[ind]
 
