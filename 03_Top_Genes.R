@@ -16,9 +16,8 @@
 
 
 
-
+##### For RAVmodel_536 #########################################################
 ## Working directories
-in.dir <- "/nobackup/16tb_b/GenomicSignatures/refinebio/rna_seq_v2"  
 in.dir <- "/mnt/STORE1/16tb_b/GenomicSignatures/refinebio/rna_seq_v2"
   
 ## Load the training dataset information
@@ -26,6 +25,13 @@ dir <- system.file("extdata", package = "GenomicSuperSignature")
 studyMeta <- read.table(file.path(dir, "studyMeta.tsv.gz"))
 ind <- which(studyMeta$RAVmodel_536 == TRUE)
 studies <- studyMeta$studyName[ind]
+
+##### For all RAVmodels ########################################################
+## Inputs required
+# wd <- "/mnt/STORE1/16tb_b/refinebio_mice
+# in.dir <- file.pah(wd, "rna_seq_processed") # same as `out.dir` in 01_Import.R
+# studies <- c() # `allStudies` from 02_Filtering.R
+
 
 ## List containing the ordered list of genes from each study
 topGenesInTrainingData <- list()  

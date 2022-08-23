@@ -16,7 +16,7 @@ ind <- which(studyMeta$imported == TRUE)
 allStudies <- studyMeta$studyName[ind]
 
 ##### MeSH #####################################################################
-dat_dir <- "~/data2/GenomicSuperSignaturePaper/inst/extdata"
+dat_dir <- system.file("extdata", package = "GenomicSuperSignaturePaper")
 json_path <- file.path(dat_dir, "sra_to_mesh-000000000000.json")
 x <- jsonlite::stream_in(file(json_path))
 x <- x[x$identifier %in% allStudies,]

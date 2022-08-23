@@ -25,6 +25,7 @@
 
 library(dplyr)
 
+##### For RAVmodel_536 #########################################################
 ## Working directories
 in.dir <- "~/data2/refinebio_processed/rna_seq_v2"  
 
@@ -35,6 +36,10 @@ studyMeta <- read.table(file.path(dir, "studyMeta.tsv.gz"))
 ## 1,399 studies that are successfully imported and have > 20 samples
 ind <- which(studyMeta$imported == TRUE)
 allStudies <- studyMeta$studyName[ind]
+
+##### For all RAVmodels ########################################################
+# in.dir <- ""    # the `out.dir` from 01_Import.R script
+# allStudies <- studyNames[!studyNames %in% import_error[,1]] # From 01_Import.R
 
 ## Log2 transformation
 for (study in allStudies) {

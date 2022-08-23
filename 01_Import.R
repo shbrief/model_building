@@ -12,7 +12,7 @@
 
 
 
-
+##### For RAVmodel_536 #########################################################
 ## Working directories
 in.dir <- "~/data2/refinebio_download/rna_seq"
 # out.dir <- "/nobackup/16tb_b/GenomicSignatures/refinebio/rna_seq"   # 889 studies more than 50 metadata samples/study
@@ -24,10 +24,21 @@ studyMeta <- read.table(file.path(dir, "studyMeta.tsv.gz"))
 ind <- which(studyMeta$downloaded > 20)   # try to import 1579 studies with > 20 downloaded samples
 studyNames <- studyMeta$studyName[ind]
 
-## Prepare tx2gene file for tximport 
-library(tximport)
+## Ensemble annotation database
 library(EnsDb.Hsapiens.v86)
 txdb <- EnsDb.Hsapiens.v86
+
+##### For all RAVmodels ########################################################
+## Inputs required
+# wd <- "/mnt/STORE1/16tb_b/refinebio_mice"
+# in.dir <- file.path(wd, "rna_seq")
+# out.dir <- file.path(wd, "rna_seq_processed")
+# studyNames <- c() # study accession numbers as the way it's saved in `in.dir`
+# library(EnsDb.Mmusculus.v79) # Change to the correct species
+# txdb <- EnsDb.Mmusculus.v79 # Change to the correct species
+
+## Prepare tx2gene file for tximport 
+library(tximport)
 k <- AnnotationDbi::keys(txdb, keytype = "TXNAME")
 tx2gene <- AnnotationDbi::select(txdb, k, "SYMBOL", "TXNAME")
 tx2gene <- tx2gene[,1:2]
@@ -54,9 +65,10 @@ for (studyName in studyNames) {
         saveRDS(rseq_counts, file = file.path(out.path, fname))
   }, error = function(e) {
       # collect studies with error: samples in the same study seem to have different genes
-        study_with_error <- paste("ERROR with study", studyName, ":", conditionMessage(e))
+        study_with_error <- data.frame(studyName, conditionMessage(e))
         write.table(study_with_error, 
-                    file = "/nobackup/16tb_b/GenomicSignatures/refinebio/studies_with_error.csv",
-                    append = TRUE, row.names = FALSE, col.names = FALSE, sep = ",")
+                    # file = "/nobackup/16tb_b/GenomicSignatures/refinebio/studies_with_error.csv",
+                    file = file.path(wd, "studies_with_error.tsv"),
+                    append = TRUE, row.names = FALSE, col.names = FALSE)
   })
 }

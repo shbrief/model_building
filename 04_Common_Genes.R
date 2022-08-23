@@ -13,6 +13,7 @@
 
 
 ## Choose the training dataset
+## This object is created in 03_Top_Genes.R
 topGenesInTrainingData <- readRDS("data/topGenesInTrainingData_536_2020-08-07.rds")
 
 ##### Top 90% varying genes ####################################################
@@ -30,6 +31,7 @@ for (i in 2:length(topGenesInTrainingData)) {
   topGenes <- Reduce(intersect, ls)
 }
 
+topGenes <- topGenes[nzchar(topGenes)] # remove empty character
 saveRDS(topGenes, file.path("data", 
                             paste0("topGenes_", length(topGenes),".rds")))
 

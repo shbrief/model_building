@@ -25,7 +25,7 @@
 
 
 
-
+##### Inputs for RAVmodel_536 ##################################################
 ## Input parameters for RAVmodel_536
 n <- 20   # The number PCs to keep
 cg <- readRDS("data/topGenes_13934.rds")
@@ -82,7 +82,8 @@ for (study in allStudies) {
   dir.path <- file.path(in.dir, study)
   x <- data.table::fread(file.path(dir.path, paste0(study, "_count.csv")), 
                          showProgress = FALSE)
-  x <- data.frame(x[,-1], row.names = x$V1) %>% as.matrix
+  # x <- data.frame(x[,-1], row.names = x$V1) %>% as.matrix
+  x <- data.frame(x[,-1], row.names = x$V1)
   x <- x[cg,,drop=FALSE]
   
   # Remove non-expressing genes in all samples (m == 0)
@@ -90,8 +91,14 @@ for (study in allStudies) {
 
   # This part will be used if any sample is removed upon filtering
   if (ncol(x) <= 20) {
-    print(paste(study, "has only", ncol(x), "samples after filtering."))
-    next
+      final_sample_number <- paste(ncol(x), "samples after filtering.")
+      study_with_less_samples <- data.frame(study, final_sample_number)
+      write.table(study_with_less_samples, 
+                  file = file.path(wd, "study_with_less_samples.tsv"),
+                  append = TRUE, row.names = FALSE, col.names = FALSE)
+      
+      print(paste(study, "has only", ncol(x), "samples after filtering."))
+      next
   }
 
   # Normalization
