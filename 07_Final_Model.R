@@ -103,9 +103,10 @@ saveRDS(RAVmodel, file.path(out_dir, fname))
 
 
 ##### GSEA #####################################################################
-gsea_script <- "~/data2/model_building/R/build_gsea_DB.R"
+gsea_script <- "inst/scripts/build_gsea_DB.R"
 source(gsea_script)  # This is the processing script. Doule-check the details.
 
+dir2 <- system.file("scripts", package = "GenomicSuperSignature")
 searchPathways_func <- file.path(dir2, "searchPathways.R")
 source(searchPathways_func)  # load the function
 

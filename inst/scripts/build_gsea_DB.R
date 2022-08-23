@@ -74,7 +74,8 @@ data(bloodCellMarkersIRISDMAP)
 data(svmMarkers)
 allPaths <- combinePaths(canonicalPathways, bloodCellMarkersIRISDMAP, svmMarkers)
 
-source('~/data2/GenomicSuperSignature/inst/scripts/gmtToMatrix.R')
+dir <- system.file("scripts", package = "GenomicSuperSignature")
+source(file.path(dir, "gmtToMatrix.R"))
 term2gene <- matrixToTERM2GENE(allPaths)
 
 for (i in seq_len(ncol(RAVmodel))) {
@@ -129,7 +130,7 @@ library(GenomicSuperSignature)
 library(clusterProfiler)
 
 # MSigDB C2
-term2gene <- clusterProfiler::read.gmt("~/data2/[archive]Genomic_Super_Signature/GSEA/data/c2.all.v7.1.symbols.gmt")
+term2gene <- clusterProfiler::read.gmt("~/Archives/[archive]Genomic_Super_Signature/GSEA/data/c2.all.v7.1.symbols.gmt")
 colnames(term2gene) <- c("gs_name", "entrez_gene")
 
 for (i in seq_len(ncol(RAVmodel))) {
